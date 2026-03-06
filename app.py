@@ -16,14 +16,17 @@ def get_data(worksheet):
 st.title("🚧 Sistema Segnaletica (Cloud Sync)")
 
 # Caricamento dinamico delle liste dai fogli
+# --- CARICAMENTO DATI ---
 try:
-    df_movimenti = get_data("Movimenti")
-    materiali = get_data("Materiali")['item'].tolist()
-    dimensioni = get_data("Dimensioni")['item'].tolist()
-except:
-    st.error("Errore di connessione al database. Verifica i nomi dei fogli.")
+    # Prova a leggere il foglio Movimenti
+    df_movimenti = conn.read(worksheet="Movimenti")
+    # Prova a leggere le liste
+    materiali = conn.read(worksheet="Materiali")['item'].tolist()
+    dimensioni = conn.read(worksheet="Dimensioni")['item'].tolist()
+except Exception as e:
+    st.error(f"⚠️ Errore Tecnico: {e}")
+    st.info("Consiglio: Controlla che i nomi dei fogli siano identici (Movimenti, Materiali, Dimensioni) e che il file sia condiviso correttamente.")
     st.stop()
-
 menu = ["📊 Dashboard", "➕ Registra", "⚙️ Impostazioni"]
 choice = st.sidebar.selectbox("Menu", menu)
 
