@@ -33,7 +33,8 @@ try:
 except Exception as e:
     st.error(f"❌ Errore di lettura: {e}")
     st.info("Se vedi 'Worksheet not found', significa che il nome del foglio su Google Sheets non è IDENTICO a quello nel codice.")
-    st.stop()menu = ["📊 Dashboard", "➕ Registra", "⚙️ Impostazioni"]
+    st.stop()
+    menu = ["📊 Dashboard", "➕ Registra", "⚙️ Impostazioni"]
 choice = st.sidebar.selectbox("Menu", menu)
 
 # --- SEZIONE: REGISTRA ---
