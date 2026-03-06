@@ -16,16 +16,20 @@ def get_data(worksheet):
 st.title("🚧 Sistema Segnaletica (Cloud Sync)")
 
 # Caricamento dinamico delle liste dai fogli
-# --- CARICAMENTO DATI ---
+# --- CODICE DETECTIVE PER DIAGNOSI ---
 try:
-    # Prova a leggere il foglio Movimenti
+    # Recuperiamo l'elenco di TUTTI i nomi dei fogli presenti nel tuo file
+    fogli_disponibili = conn.list_worksheets()
+    st.write(f"🔍 Fogli trovati nel tuo file Google: `{fogli_disponibili}`")
+    
+    # Tentativo di caricamento mirato
     df_movimenti = conn.read(worksheet="Movimenti")
-    # Prova a leggere le liste
     materiali = conn.read(worksheet="Materiali")['item'].tolist()
     dimensioni = conn.read(worksheet="Dimensioni")['item'].tolist()
+    st.success("✅ Connessione riuscita!")
 except Exception as e:
-    st.error(f"⚠️ Errore Tecnico: {e}")
-    st.info("Consiglio: Controlla che i nomi dei fogli siano identici (Movimenti, Materiali, Dimensioni) e che il file sia condiviso correttamente.")
+    st.error(f"❌ Errore specifico: {e}")
+    st.info("Controlla se i nomi sopra corrispondono esattamente a Movimenti, Materiali e Dimensioni.")
     st.stop()
 menu = ["📊 Dashboard", "➕ Registra", "⚙️ Impostazioni"]
 choice = st.sidebar.selectbox("Menu", menu)
