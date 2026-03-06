@@ -17,21 +17,23 @@ st.title("🚧 Sistema Segnaletica (Cloud Sync)")
 
 # Caricamento dinamico delle liste dai fogli
 # --- CODICE DETECTIVE PER DIAGNOSI ---
+# --- NUOVO CODICE DETECTIVE ---
 try:
-    # Recuperiamo l'elenco di TUTTI i nomi dei fogli presenti nel tuo file
-    fogli_disponibili = conn.list_worksheets()
-    st.write(f"🔍 Fogli trovati nel tuo file Google: `{fogli_disponibili}`")
+    # Proviamo a leggere il foglio senza specificare il nome.
+    # Questo caricherà il PRIMO foglio che trova a sinistra.
+    test_df = conn.read() 
+    st.success("✅ Connessione base riuscita!")
+    st.write("L'app sta leggendo questo foglio come primario:", test_df.head(2))
     
-    # Tentativo di caricamento mirato
+    # Ora proviamo a caricare quelli specifici
     df_movimenti = conn.read(worksheet="Movimenti")
     materiali = conn.read(worksheet="Materiali")['item'].tolist()
     dimensioni = conn.read(worksheet="Dimensioni")['item'].tolist()
-    st.success("✅ Connessione riuscita!")
+    st.success("✅ Tutti i fogli specifici (Movimenti, Materiali, Dimensioni) sono stati trovati!")
 except Exception as e:
-    st.error(f"❌ Errore specifico: {e}")
-    st.info("Controlla se i nomi sopra corrispondono esattamente a Movimenti, Materiali e Dimensioni.")
-    st.stop()
-menu = ["📊 Dashboard", "➕ Registra", "⚙️ Impostazioni"]
+    st.error(f"❌ Errore di lettura: {e}")
+    st.info("Se vedi 'Worksheet not found', significa che il nome del foglio su Google Sheets non è IDENTICO a quello nel codice.")
+    st.stop()menu = ["📊 Dashboard", "➕ Registra", "⚙️ Impostazioni"]
 choice = st.sidebar.selectbox("Menu", menu)
 
 # --- SEZIONE: REGISTRA ---
