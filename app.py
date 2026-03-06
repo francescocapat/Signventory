@@ -18,21 +18,27 @@ st.title("🚧 Sistema Segnaletica (Cloud Sync)")
 # Caricamento dinamico delle liste dai fogli
 # --- CODICE DETECTIVE PER DIAGNOSI ---
 # --- NUOVO CODICE DETECTIVE ---
+# --- CARICAMENTO DATI OTTIMIZZATO ---
 try:
-    # Proviamo a leggere il foglio senza specificare il nome.
-    # Questo caricherà il PRIMO foglio che trova a sinistra.
-    test_df = conn.read() 
-    st.success("✅ Connessione base riuscita!")
-    st.write("L'app sta leggendo questo foglio come primario:", test_df.head(2))
+    # 1. Carichiamo il foglio principale (il primo a sinistra) come Movimenti
+    df_movimenti = conn.read().dropna(how="all")
     
-    # Ora proviamo a caricare quelli specifici
-    df_movimenti = conn.read(worksheet="Movimenti")
-    materiali = conn.read(worksheet="Materiali")['item'].tolist()
-    dimensioni = conn.read(worksheet="Dimensioni")['item'].tolist()
-    st.success("✅ Tutti i fogli specifici (Movimenti, Materiali, Dimensioni) sono stati trovati!")
+    # 2. Proviamo a caricare le liste. Se falliscono, usiamo liste vuote per non bloccare l'app
+    try:
+        materiali = conn.read(worksheet="Materiali")['item'].dropna().tolist()
+    except:
+        st.warning("⚠️ Foglio 'Materiali' non trovato. Uso lista di emergenza.")
+        materiali = ["Ferro Scatolato", "Alluminio Piano", "Pellicola R1"]
+        
+    try:
+        dimensioni = conn.read(worksheet="Dimensioni")['item'].dropna().tolist()
+    except:
+        st.warning("⚠️ Foglio 'Dimensioni' non trovato. Uso lista di emergenza.")
+        dimensioni = ["Disco Ø 60 cm", "Triangolo 90 cm"]
+
+    st.success("✅ Sistema pronto!")
 except Exception as e:
-    st.error(f"❌ Errore di lettura: {e}")
-    st.info("Se vedi 'Worksheet not found', significa che il nome del foglio su Google Sheets non è IDENTICO a quello nel codice.")
+    st.error(f"❌ Errore critico: {e}")
     st.stop()
     menu = ["📊 Dashboard", "➕ Registra", "⚙️ Impostazioni"]
 choice = st.sidebar.selectbox("Menu", menu)
